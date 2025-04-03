@@ -92,30 +92,45 @@ public:
      * @param name Nombre del refugio
      * @param leader Nombre del líder del refugio
      */
-    Refugio(const std::string& name, const std::string& leader);
+    Refugio(const std::string& name, const std::string& leader) :EntidadGenerica(name), m_leader(leader) {}
 
     /**
      * @brief Muestra la información del refugio
      */
-    void showInfo() const override;
+    void showInfo() const override
+    {
+        std::cout << "Defensa: " << m_defense ; 
+        std::cout << "Ataque: " << m_attack ; 
+        std::cout << "Lider: " << m_leader ; 
+        //(No vi oportuno agregar los moradores, recursos y visitantes)
+    }
 
     /**
      * @brief Ejecuta una acción específica del refugio
      */
-    void doAction() const;
+    void doAction() const
+    {
+        std::cout << "Binevenido al refugio " << m_name ;
+    }
 
     /**
      * @brief Agrega un morador al refugio
      * @param refugee Nombre del morador
      */
-    void addRefugee(const std::string& refugee);
+    void addRefugee(const std::string& refugee)
+    {
+        m_refugees.push_back(refugee);
+    }
 
     /**
      * @brief Agrega un recurso al refugio
      * @param resource Nombre del recurso
      * @param amount Cantidad del recurso
      */
-    void addResource(const std::string& resource, float amount);
+    void addResource(const std::string& resource, float amount)
+    {
+        m_resources.push_back(std::make_pair(resource, amount));
+    }
 
     /**
      * @brief Consume un recurso del refugio
@@ -123,31 +138,76 @@ public:
      * @param amount Cantidad a consumir
      * @return true si el consumo fue exitoso, false si no hay suficiente recurso
      */
-    bool consumeResource(const std::string& resource, float amount);
+    bool consumeResource(const std::string& resource, float amount)
+    {
+        for (int i = 0; i < m_resources.size(); i++)
+        {
+            if (m_resources[i].first == resource) 
+            {
+                if (m_resources[i].second >= amount) 
+                {
+                    m_resources[i].second -= amount;
+                    return true; 
+                } else 
+                {
+                    return false; 
+                }
+            }
+        }
+        return false; 
+    }
 
     /**
      * @brief Registra un visitante en el refugio (nombre y facción)
      * @param nombre Nombre del visitante
      * @param faccion Facción del visitante
      */
-    void registerVisitant(const std::string& nombre, EngineData::Faction faccion);
+    void registerVisitant(const std::string& nombre, EngineData::Faction faccion)
+    {
+        Visitante newVisit{nombre,faccion};
+        m_visitants->push_front(newVisit);
+    }
 
     /**
      * @brief Muestra todos los visitantes registrados
      */
-    void showVisits();
+    void showVisits()
+    {
+        printRecursive(m_visitants->get_head());
+    }
 
     /**
      * @brief Busca si una facción ha visitado el refugio
      */
-    bool hasFactionVisited(EngineData::Faction faccion) const;
+    bool hasFactionVisited(EngineData::Faction faccion) const
+    {
+        DoublyListNode<Visitante>* head = m_visitants->get_head();
+        while (head != nullptr)
+        {
+            if(head->data.faccion == faccion)
+            {
+                return true;
+            }
+            head = head->next;
+        }
+        return false;
+    }
 
     /**
      *
      * @param faccion Faccion a verificar si es segura.
      * @return Booleano si es segura o no.
      */
-    bool isSafeFaction(EngineData::Faction faccion) const;
+    bool isSafeFaction(EngineData::Faction faccion) const
+    {
+        if (faccion == EngineData::Faction::LOOTERS ||
+            faccion == EngineData::Faction::MUTANTS ||
+            faccion == EngineData::Faction::RAIDERS ||
+            faccion == EngineData::Faction::GHOULS)
+        {
+            return false; 
+        }
+        return true; 
+    };
 };
-
 #endif // REFUGIO_HPP
