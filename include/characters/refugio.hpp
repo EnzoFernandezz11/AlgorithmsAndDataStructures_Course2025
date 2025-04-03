@@ -41,12 +41,49 @@ private:
 
     std::string m_leader; ///< Nombre del líder del refugio
 
-    void printRecursive(DoublyListNode<Visitante>* mNode);
+    void printRecursive(DoublyListNode<Visitante>* mNode)
+    {
+        if(mNode == nullptr)
+        {
+            return;
+        }
+        std::cout << "Nombre: " << mNode->data.nombre << ". Facción: " << faccionToString(mNode->data.faccion) << std::endl;
+        printRecursive(mNode->next);
+    }
 
     /**
      * @brief Devuelve la faccion en formato de string para su impresion.
      */
-    std::string faccionToString(EngineData::Faction faccion) const;
+    std::string faccionToString(EngineData::Faction faccion) const
+    {
+        switch (faccion)
+        {
+        case EngineData::Faction::WATER_MERCHANTS:
+            return "Mercaderes de agua";
+        case EngineData::Faction::MERCHANTS:
+            return "Mercaderes";
+        case EngineData::Faction::REFUGEES:
+            return "Refugiados";
+        case EngineData::Faction::LOOTERS:
+            return "Saqueadores";
+        case EngineData::Faction::STEEL_BROTHERS:
+            return "Hermanos de acero";
+        case EngineData::Faction::ENCLAVE:
+            return "Enclave";
+        case EngineData::Faction::MUTANTS:
+            return "Mutantes";
+        case EngineData::Faction::RAIDERS:
+            return "Asaltantes";
+        case EngineData::Faction::GHOULS:
+            return "Ghouls";
+        case EngineData::Faction::CARAVAN:
+            return "Caravanas";
+        case EngineData::Faction::UNKNOWN:
+            return "Desconocido";
+        default:
+            return "Faccion no reconocida";
+        }
+    }
 
 public:
     /**
