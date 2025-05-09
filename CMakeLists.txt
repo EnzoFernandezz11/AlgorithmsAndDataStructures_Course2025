@@ -21,6 +21,7 @@ add_executable(${CMAKE_PROJECT_NAME} ${SRC_FILES})
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/include")
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/include/dataStructures")
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/include/characters")
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/include/engine")  
 
 # Copia todos los archivos de la carpeta assets al directorio de ejecución
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
@@ -45,7 +46,8 @@ if (ENABLE_TESTS)
 
     target_include_directories(unit_tests PRIVATE "${CMAKE_SOURCE_DIR}/include")
     target_include_directories(unit_tests PRIVATE "${CMAKE_SOURCE_DIR}/include/dataStructures")
-    target_include_directories(unit_tests PRIVATE "${CMAKE_SOURCE_DIR}/include/characters")  
+    target_include_directories(unit_tests PRIVATE "${CMAKE_SOURCE_DIR}/include/characters")
+    target_include_directories(unit_tests PRIVATE "${CMAKE_SOURCE_DIR}/include/engine")  
 
     enable_testing()
 

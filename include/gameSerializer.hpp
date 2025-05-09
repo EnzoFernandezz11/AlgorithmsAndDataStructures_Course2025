@@ -2,8 +2,6 @@
 #define GAME_SERIALIZER_HPP
 
 #include <string>
-#include "engine.hpp"
-
 
 class Engine; // Forward declaration
 

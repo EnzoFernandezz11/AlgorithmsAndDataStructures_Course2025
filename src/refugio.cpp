@@ -1,4 +1,7 @@
 #include "refugio.hpp"
+#include "asaltante.hpp"
+#include "refugiado.hpp"
+#include <variant>
 
 Refugio::Refugio(const std::string& name, const std::string& leader)
     : EntidadGenerica(name)
@@ -11,10 +14,10 @@ void Refugio::showInfo() const
     std::cout << "🏠 Refugio: " << m_name << "\t A cargo de: " << m_leader << "\n";
     std::cout << "\t🛡️  Defensa: " << m_defense << "\n";
     std::cout << "\t⚔️  Ataque: " << m_attack << "\n";
-    std::cout << "👥 Moradores: ";
-    for (int refugee = 0; refugee < m_refugees.size(); refugee++)
+    std::cout << "👥 Moradores: " << "\n";
+    for (const auto& refugee : m_refugees)
     {
-        std::cout << "\t - " << m_refugees.at(refugee) << std::endl;
+        refugee.showInfo();
     }
     std::cout << "\n";
     std::cout << "\t📦 Recursos: \n";
@@ -41,18 +44,30 @@ bool Refugio::consumeResource(const std::string& resource, float amount)
     return false;
 }
 
-void Refugio::registerVisitant(const std::string& nombre, const EngineData::Faction faccion)
+void Refugio::registerVisitant(const NPC::VisitanteVariant& visitante)
 {
-    if (!isSafeFaction(faccion))
-    {
-//        std::cout << "Acceso denegado: La facción " << faccionToString(faccion) << " no es segura para el refugio."
-  //                << std::endl;
-        return;
-    }
+    std::visit(
+        [this](const auto& visitor)
+        {
+            using VisitorType = std::decay_t<decltype(visitor)>;
 
-    Visitante nuevoVisitante {nombre, faccion};
-    m_visitants->push_front(nuevoVisitante);
-    std::cout << "Visitante: " << nombre << " registrado existosamente en el refugio." << std::endl;
+            if constexpr (std::is_same_v<VisitorType, Raider>)
+            {
+                std::cout << " 🔺 VAULT detecta problemas... " << '\n';
+                visitor.showInfo();
+            }
+            else if constexpr (std::is_same_v<VisitorType, Refugee>)
+            {
+                visitor.showInfo();
+                m_refugees.push_back(visitor);
+            }
+            else
+            {
+                std::cout << "👀 Visitante sin comportamiento definido." << '\n';
+                throw std::runtime_error("Visitante sin comportamiento definido");
+            }
+        },
+        visitante);
 }
 
 void Refugio::showVisits()
@@ -61,15 +76,14 @@ void Refugio::showVisits()
     printRecursive(m_visitants->get_head());
 }
 
-void Refugio::printRecursive(DoublyListNode<Visitante>* mNode)
+void Refugio::printRecursive(DoublyListNode<NPC::VisitanteVariant>* mNode)
 {
     if (!mNode)
     {
-        std::cout << "Fin del registro!" << std::endl;
+        std::cout << "Fin del registro!" << '\n';
         return;
     }
 }
-
 
 bool Refugio::isSafeFaction(const EngineData::Faction faccion) const
 {

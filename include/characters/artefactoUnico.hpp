@@ -1,10 +1,12 @@
 #ifndef ARTEFACTOUNICO_HPP
 #define ARTEFACTOUNICO_HPP
 
-#include "engineData.hpp"
-#include "entidadGenerica.hpp"
+#include <algorithm>
 #include <iostream>
 #include <string>
+
+#include "engine/engineData.hpp"
+#include "entidadGenerica.hpp"
 
 /**
  * @class ArtefactoUnico
@@ -16,7 +18,6 @@
 class ArtefactoUnico : public EntidadGenerica
 {
 private:
-    std::string m_rarity; ///< Rareza del artefacto (por ejemplo: "Legendario", "Prototipo", "Desconocido")
     EngineData::UniqueArtifactType
         m_type;          ///< Tipo de artefacto (por ejemplo: "Tecnología", "Arma", "Medicina", "Módulo de defensa")
     double m_durability; ///< Nivel de durabilidad restante del artefacto (de 0.0 a 100.0)
@@ -25,16 +26,11 @@ public:
     /**
      * @brief Constructor del artefacto único
      * @param name Nombre del artefacto
-     * @param rarity Rareza del artefacto
      * @param type Tipo del artefacto
      * @param durability Durabilidad inicial
      */
-    ArtefactoUnico(const std::string& name,
-                   const std::string& rarity,
-                   const EngineData::UniqueArtifactType type,
-                   double durability)
+    explicit ArtefactoUnico(const std::string& name, const EngineData::UniqueArtifactType type, double durability)
         : EntidadGenerica(name)
-        , m_rarity(rarity)
         , m_type(type)
         , m_durability(durability)
     {
@@ -46,22 +42,8 @@ public:
     void showInfo() const override
     {
         std::cout << "🧪 Artefacto: " << m_name << "\n"
-                  << " - Tipo      : " << typeToString(m_type) << "\n"
-                  << " - Rareza    : " << m_rarity << "\n"
-                  << " - Durabilidad: " << m_durability << "%" << std::endl;
-    }
-
-    std::string_view typeToString(EngineData::UniqueArtifactType type) const
-    {
-        switch (type)
-        {
-            case EngineData::UniqueArtifactType::WEAPON: return "Arma";
-            case EngineData::UniqueArtifactType::ARMOR: return "Armadura";
-            case EngineData::UniqueArtifactType::VEHICLE: return "Vehículo";
-            case EngineData::UniqueArtifactType::RELIC: return "Reliquia";
-            case EngineData::UniqueArtifactType::TECHNOLOGY: return "Tecnología";
-            default: return "Desconocido";
-        }
+                  << " - Tipo      : " << EngineData::valueToString(m_type) << "\n"
+                  << " - Durabilidad: " << m_durability << "%" << '\n';
     }
 
     /**
@@ -71,8 +53,7 @@ public:
     void use(double amount)
     {
         m_durability -= amount;
-        if (m_durability < 0.0)
-            m_durability = 0.0;
+        m_durability = std::max(m_durability, 0.0);
     }
 
     /**
@@ -82,6 +63,11 @@ public:
     bool isBroken() const
     {
         return m_durability <= 0.0;
+    }
+
+    std::string nombre() const
+    {
+        return this->m_name;
     }
 };
 

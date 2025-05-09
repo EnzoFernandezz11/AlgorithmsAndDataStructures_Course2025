@@ -1,5 +1,7 @@
 #include "gameSerializer.hpp"
 #include "engine.hpp"
+#include "uiDef.hpp"
+
 #include <fstream>
 #include <iostream>
 #include <sstream>

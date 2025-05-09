@@ -1,9 +1,10 @@
 #ifndef RAIDER_HPP
 #define RAIDER_HPP
 
-#include "entidadGenerica.hpp"
 #include <iostream>
-#include <random>
+
+#include "entidadGenerica.hpp"
+#include "randomEventGenerator.hpp"
 
 /**
  * @class Raider
@@ -15,22 +16,28 @@
 class Raider : public EntidadGenerica
 {
 private:
-    int m_integrantes; ///< Cantidad de miembros en la banda
-    int m_poderFuego;  ///< Nivel de ataque general
-    bool m_rendidos;   ///< Indica si se han rendido
-    bool m_seUnieron;  ///< Indica si fueron aceptados en el refugio
+    int m_integrantes;                                 ///< Cantidad de miembros en la banda
+    double m_fireFactor;                               ///< Nivel de ataque general
+    bool m_rendidos {false};                           ///< Indica si se han rendido
+    bool m_seUnieron {false};                          ///< Indica si fueron aceptados en el refugio
+    double m_rendicionChance;                          ///< Probabilidad de rendición
+    RandomEventGenerator* m_randomgenerator {nullptr}; ///< Generador de eventos aleatorios
 
 public:
     /**
      * @brief Constructor
      * @param nombre Nombre del grupo raider
      */
-    explicit Raider(const std::string& nombre)
+    explicit Raider(const std::string& nombre,
+                       int integrantes,
+                       RandomEventGenerator* randomGenerator,
+                       double poderFuego,
+                       double rendicionChance)
         : EntidadGenerica(nombre)
-        , m_integrantes(generarCantidad())
-        , m_poderFuego(generarPoder())
-        , m_rendidos(false)
-        , m_seUnieron(false)
+        , m_integrantes(integrantes)
+        , m_fireFactor(poderFuego)
+        , m_rendicionChance(rendicionChance)
+        , m_randomgenerator(randomGenerator) // 30% de posibilidad de rendirse
     {
     }
 
@@ -41,7 +48,7 @@ public:
     {
         std::cout << "🔫 RAIDERS: " << m_name << "\n"
                   << " - Miembros: " << m_integrantes << "\n"
-                  << " - Poder de fuego: " << m_poderFuego << "\n"
+                  << " - Factor de fuego: " << m_fireFactor << "\n"
                   << " - ¿Rendidos?: " << (m_rendidos ? "Sí" : "No") << "\n"
                   << " - ¿Se unieron al refugio?: " << (m_seUnieron ? "Sí" : "No") << "\n";
     }
@@ -51,17 +58,14 @@ public:
      */
     void intentarRendicion()
     {
-        static std::mt19937 rng(std::random_device {}());
-        std::bernoulli_distribution chance(0.3); // 30% de posibilidad de rendirse
-
-        if (chance(rng))
+        if (m_randomgenerator->chance(m_rendicionChance))
         {
             m_rendidos = true;
-            std::cout << "💬 " << m_name << " >>> ¡Nos rendimos! ¡Déjennos vivir!" << std::endl;
+            std::cout << "💬 " << m_name << " >>> ¡Nos rendimos! ¡Déjennos vivir!" << '\n';
         }
         else
         {
-            std::cout << "💬 " << m_name << " >>> ¡Nunca nos rendiremos!" << std::endl;
+            std::cout << "💬 " << m_name << " >>> ¡Nunca nos rendiremos!" << '\n';
         }
     }
 
@@ -73,11 +77,11 @@ public:
         if (m_rendidos)
         {
             m_seUnieron = true;
-            std::cout << "✅ Los raiders se han unido al refugio. Serán vigilados de cerca..." << std::endl;
+            std::cout << "✅ Los raiders se han unido al refugio. Serán vigilados de cerca..." << '\n';
             return true;
         }
 
-        std::cout << "❌ No se puede aceptar a un grupo hostil sin rendirse." << std::endl;
+        std::cout << "❌ No se puede aceptar a un grupo hostil sin rendirse." << '\n';
         return false;
     }
 
@@ -86,7 +90,7 @@ public:
      */
     int poderTotal() const
     {
-        return m_integrantes * m_poderFuego;
+        return static_cast<int>(m_integrantes * m_fireFactor);
     }
 
     bool estanRendidos() const
@@ -96,21 +100,6 @@ public:
     bool seUnieron() const
     {
         return m_seUnieron;
-    }
-
-private:
-    int generarCantidad() const
-    {
-        static std::mt19937 rng(std::random_device {}());
-        std::uniform_int_distribution<int> dist(10, 15);
-        return dist(rng);
-    }
-
-    int generarPoder() const
-    {
-        static std::mt19937 rng(std::random_device {}());
-        std::uniform_int_distribution<int> dist(15, 30);
-        return dist(rng);
     }
 };
 

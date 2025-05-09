@@ -2,7 +2,6 @@
 #define RANDOM_EVENT_GENERATOR_HPP
 
 #include <random>
-#include <string>
 #include <vector>
 
 /**
@@ -36,16 +35,16 @@ public:
     /**
      * @brief Devuelve un número flotante aleatorio entre [min, max]
      */
-    float getFloat(float min, float max)
+    double getDouble(double min, double max)
     {
-        std::uniform_real_distribution<float> dist(min, max);
+        std::uniform_real_distribution<double> dist(min, max);
         return dist(m_rng);
     }
 
     /**
      * @brief Devuelve true con una probabilidad dada (0.0 a 1.0)
      */
-    bool chance(float probability)
+    bool chance(double probability)
     {
         std::bernoulli_distribution dist(probability);
         return dist(m_rng);

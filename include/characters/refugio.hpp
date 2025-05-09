@@ -1,14 +1,19 @@
 #ifndef REFUGIO_HPP
 #define REFUGIO_HPP
 
-#include "engine.hpp"
-#include "engineData.hpp"
-#include "entidadGenerica.hpp"
-#include "list.hpp"
-#include "wrapperVector.hpp"
-#include <iostream>
 #include <string>
 #include <utility>
+
+#include "engine/engineData.hpp"
+
+#include "dataStructures/list.hpp"
+#include "dataStructures/wrapperVector.hpp"
+
+#include "characters/entidadGenerica.hpp"
+#include "characters/npc.hpp"
+#include "characters/refugiado.hpp"
+
+uint8_t constexpr REFUGIO_BASE_CAPACITY {10}; ///< Máximo de defensa
 
 /**
  * @class Refugio
@@ -33,20 +38,17 @@ class Refugio : public EntidadGenerica
     };
 
 private:
-    double m_defense;                                         ///< Nivel de defensa del refugio
-    double m_attack;                                          ///< Capacidad de ataque del refugio
-    wrapperVector<std::string> m_refugees;                    ///< Lista de moradores dentro del refugio
+    double m_defense; ///< Nivel de defensa del refugio
+    double m_attack;  ///< Capacidad de ataque del refugio
+    uint64_t m_maxCapacity {
+        REFUGIO_BASE_CAPACITY};        ///< Maxima capacidad del refugio, determinado por el nivel del jugador
+    std::vector<Refugee> m_refugees; ///< Lista de moradores dentro del refugio
     wrapperVector<std::pair<std::string, float>> m_resources; ///< Lista de recursos con su cantidad
-    DoublyLinkedList<Visitante>* m_visitants;                 ///< Lista de visitantes registrados
+    DoublyLinkedList<NPC::VisitanteVariant>* m_visitants;     ///< Lista de visitantes registrados
 
     std::string m_leader; ///< Nombre del líder del refugio
 
-    void printRecursive(DoublyListNode<Visitante>* mNode);
-
-    /**
-     * @brief Devuelve la faccion en formato de string para su impresion.
-     */
-    std::string faccionToString(EngineData::Faction faccion) const;
+    void printRecursive(DoublyListNode<NPC::VisitanteVariant>* mNode);
 
 public:
     /**
@@ -89,11 +91,10 @@ public:
     bool consumeResource(const std::string& resource, float amount);
 
     /**
-     * @brief Registra un visitante en el refugio (nombre y facción)
-     * @param nombre Nombre del visitante
-     * @param faccion Facción del visitante
+     * @brief Registra un visitante en el refugio
+     * @param visitante Visitante a registrar
      */
-    void registerVisitant(const std::string& nombre, EngineData::Faction faccion);
+    void registerVisitant(const NPC::VisitanteVariant& visitante);
 
     /**
      * @brief Muestra todos los visitantes registrados

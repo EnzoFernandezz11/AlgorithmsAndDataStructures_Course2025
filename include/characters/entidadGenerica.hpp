@@ -30,6 +30,12 @@ public:
      */
     virtual ~EntidadGenerica() = default;
 
+    // Rule of five: explicitly define or delete special member functions
+    EntidadGenerica(const EntidadGenerica&) = default;                // Delete copy constructor
+    EntidadGenerica& operator=(const EntidadGenerica&) = default;     // Delete copy assignment operator
+    EntidadGenerica(EntidadGenerica&&) noexcept = default;            // Default move constructor
+    EntidadGenerica& operator=(EntidadGenerica&&) noexcept = default; // Default move assignment operator
+
     /**
      * @brief Muestra la información del ente. Mostrando el nombre y otros atributos
      */
