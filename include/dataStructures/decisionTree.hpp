@@ -24,7 +24,7 @@ class DecisionTree {
         void recorrerPreorden() const;
     
     private:
-        Nodo* raiz;
+        Nodo* m_root;
     
         void insertar(Nodo*& nodo, const std::string& decision);
         bool buscar(Nodo* nodo, const std::string& decision) const;

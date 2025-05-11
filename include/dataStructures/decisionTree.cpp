@@ -3,11 +3,12 @@
 #include <queue>
 
 DecisionTree::DecisionTree() {
-    raiz = nullptr;
-};
+    m_root = nullptr;
+}
 
 DecisionTree::~DecisionTree() {
-    destruir(raiz);
+    destruir(m_root);
+    m_root = nullptr;
 }
 
 void DecisionTree::destruir(Nodo* nodo) {
@@ -19,7 +20,7 @@ void DecisionTree::destruir(Nodo* nodo) {
 
 
 void DecisionTree::insertar(const std::string& decision) {
-    insertar(raiz, decision);
+    insertar(m_root, decision);
 }
 
 void DecisionTree::insertar(Nodo*& nodo, const std::string& decision) {
@@ -39,13 +40,13 @@ void DecisionTree::insertar(Nodo*& nodo, const std::string& decision) {
 bool DecisionTree::buscar(const std::string& decision) const
 {
     //USO BFS PARA LA BUSQUEDA
-    if (raiz == nullptr) {
+    if (m_root == nullptr) {
         std::cout << "El árbol está vacío\n";
         return false;
     }
 
     std::queue<Nodo*> frontier;
-    frontier.push(raiz);
+    frontier.push(m_root);
 
     while (!frontier.empty()) {
         Nodo* actual = frontier.front();
@@ -65,17 +66,17 @@ bool DecisionTree::buscar(const std::string& decision) const
 
     return false; 
 
-};
+}
 
 void DecisionTree::eliminar(const std::string& decision){
     //USO BFS PARA LA BUSQUEDA
-    if (raiz == nullptr) {
+    if (m_root == nullptr) {
         std::cout << "El árbol está vacío\n";
         return;
     }
 
     std::queue<Nodo*> frontier;
-    frontier.push(raiz);
+    frontier.push(m_root);
 
     while (!frontier.empty()) {
         Nodo* actual = frontier.front();
@@ -95,16 +96,16 @@ void DecisionTree::eliminar(const std::string& decision){
     }
 
     return;
-};
+}
 
 bool DecisionTree::estaVacio() const
 {
-    if(raiz == nullptr)
+    if(m_root == nullptr)
     {
         return true;
     }
     return false;
-};
+}
 
 void DecisionTree::recorrerPreorden(Nodo* nodo) const
 {
@@ -116,12 +117,12 @@ void DecisionTree::recorrerPreorden(Nodo* nodo) const
     std::cout<< nodo->decision;
     recorrerPreorden(nodo->izquierda);
     recorrerPreorden(nodo->derecha);
-};
+}
 
 void DecisionTree::recorrerPreorden() const
 {
-    recorrerPreorden(raiz);
-};
+    recorrerPreorden(m_root);
+}
 
 
 
