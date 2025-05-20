@@ -108,7 +108,7 @@ int AVLTree::findMax(Node* node){
     else if(node->r == NULL)
         return node->outpostId;
 
-    return findMin(node->r);
+    return findMax(node->r);
 }
 
 bool AVLTree::contains(int outpostId){
@@ -167,46 +167,79 @@ void AVLTree::printStats(){
 
 }
 
-Node* AVLTree::remove(Node* nodo, int outpostId){
-
-    std::queue<Node*> frontier;
-    frontier.push(nodo);
-
-    while(!frontier.empty())
-    {
-        if(nodo->outpostId == outpostId)
-        {
-
-            if(nodo->l == NULL && nodo->r == NULL)
-                delete nodo;
-            else if(nodo->l == NULL)
-            {
-                Node* temp = nodo;
-                nodo = nodo->r;
-                delete temp;
-            }
-            else if(nodo->r == NULL)
-            {
-                Node* temp = nodo;
-                nodo = nodo->r;
-                delete temp;
-            }
-            else
-            {
-                Node* temp = findMinNode(nodo->r);
-                nodo->outpostId = temp->outpostId;
-                nodo->priority = temp->priority;
-                nodo->r = remove(nodo->r, temp->outpostId);
-
-            }
 
 
+Node* AVLTree::remove(Node* nodo, int outpostId) {
+    if (nodo == nullptr) return nullptr;
+
+    if (nodo->outpostId == outpostId) {
+
+        if (nodo->l == nullptr && nodo->r == nullptr) {
+            delete nodo;
+            return nullptr;
         }
-        if(nodo->l != NULL)
-            frontier.push(nodo->l);
-        if(nodo->r != NULL)
-            frontier.push(nodo->r);
+        
+        if (nodo->l == nullptr) {
+            Node* temp = nodo->r;
+            delete nodo;
+            return temp;
+        }
+        if (nodo->r == nullptr) {
+            Node* temp = nodo->l;
+            delete nodo;
+            return temp;
+        }
+        
+        Node* temp = findMinNode(nodo->r);
+        nodo->outpostId = temp->outpostId;
+        nodo->priority = temp->priority;
+        nodo->r = remove(nodo->r, temp->outpostId);
+    } else {
+        
+        nodo->l = remove(nodo->l, outpostId);
+        nodo->r = remove(nodo->r, outpostId);
     }
 
+    actHeight(nodo);
+    int bf = getBalance(nodo);
 
+    if (bf > 1 && getBalance(nodo->l) >= 0)
+        return rightRotation(nodo);
+    if (bf > 1 && getBalance(nodo->l) < 0) {
+        nodo->l = leftRotation(nodo->l);
+        return rightRotation(nodo);
+    }
+    if (bf < -1 && getBalance(nodo->r) <= 0)
+        return leftRotation(nodo);
+    if (bf < -1 && getBalance(nodo->r) > 0) {
+        nodo->r = rightRotation(nodo->r);
+        return leftRotation(nodo);
+    }
+
+    return nodo;
+}
+
+void AVLTree::remove(int outpostId){
+     remove(m_root,outpostId);
+     return;
+}
+
+void AVLTree::insert(int outpostId, int priority)
+{
+    insert(m_root,outpostId,priority);
+    return;
+}
+
+AVLTree::AVLTree() : m_root(nullptr) {}
+
+void AVLTree::destruir(Node* node) {
+    if (!node) return;
+    destruir(node->l);
+    destruir(node->r);
+    delete node;
+}
+
+AVLTree::~AVLTree() {
+    destruir(m_root);
+    m_root = nullptr;
 }
