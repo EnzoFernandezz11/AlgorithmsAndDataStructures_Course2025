@@ -16,6 +16,7 @@ void DecisionTree::destruir(Nodo* nodo) {
     destruir(nodo->izquierda);
     destruir(nodo->derecha);
     delete nodo;
+    
 }
 
 
